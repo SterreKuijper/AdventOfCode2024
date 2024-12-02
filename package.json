@@ -4,7 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "ts-node src/day01/index.ts",
+    "day01": "ts-node src/day01/index.ts",
+    "day02": "ts-node src/day02/index.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

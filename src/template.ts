@@ -1,6 +1,6 @@
-import {readInput} from "./utils/readInput";
+import {utils} from "./utils/utils";
 
-const input = readInput('../inputs/dayXX.txt');
+const input = utils('../inputs/dayXX.txt');
 
 function partOne(input: string) {
     let result = 0;

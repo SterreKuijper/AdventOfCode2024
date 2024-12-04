@@ -11,5 +11,5 @@ yarn-error.log*
 .vscode/*
 
 dist
-inputs
 /src/template.ts
+/src/inputs/

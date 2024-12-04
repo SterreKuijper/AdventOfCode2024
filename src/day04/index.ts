@@ -2,6 +2,18 @@ import {utils} from "../utils/utils";
 
 const input = utils('../inputs/day04.txt');
 
+function isEqualChar(char1: number[], char2: number[]) {
+    return char1[0] === char2[0] && char1[1] === char2[1];
+}
+
+function isValidChar(line: number, char: number, lines: string[]) {
+    return line >= 0 && line < lines.length && char >= 0 && char < lines[line].length;
+}
+
+function getChar(char: number[], lines: string[]): string {
+    return lines[char[0]][char[1]];
+}
+
 function getNeighbours(line: number, char: number, width: number, height: number) {
     let neighbours = [];
 
@@ -33,6 +45,25 @@ function getNeighbours(line: number, char: number, width: number, height: number
     return neighbours;
 }
 
+function getDiagonals(line: number, char: number, width: number, height: number) {
+    let diagonals = [];
+
+    if (line > 0 && char > 0) {
+        diagonals.push([line - 1, char - 1]); // top left
+    }
+    if (line > 0 && char < width - 1) {
+        diagonals.push([line - 1, char + 1]); // top right
+    }
+    if (line < height - 1 && char < width - 1) {
+        diagonals.push([line + 1, char + 1]); // bottom right
+    }
+    if (line < height - 1 && char > 0) {
+        diagonals.push([line + 1, char - 1]); // bottom left
+    }
+
+    return diagonals;
+}
+
 function nextXmasChar(char1: number[], char2: number[]) {
     let nextChar = [];
 
@@ -47,8 +78,20 @@ function nextXmasChar(char1: number[], char2: number[]) {
     return nextChar;
 }
 
-function isValidChar(line: number, char: number, lines: string[]) {
-    return line >= 0 && line < lines.length && char >= 0 && char < lines[line].length;
+function isXMAS(char1: number[], char2: number[], lines: string[]) {
+    const diagonals = getDiagonals(char1[0], char1[1], lines[char1[0]].length, lines.length);
+    if (diagonals.length !== 4) return false;
+    const indexChar2 = diagonals.findIndex(diagonal => isEqualChar(diagonal, char2))
+
+    if (indexChar2 < 0) return false;
+
+    const opposite1 = diagonals[(indexChar2 + 1) % diagonals.length];
+    const opposite2 = diagonals[(indexChar2 + 3) % diagonals.length];
+
+    const charOpposite1 = getChar(opposite1, lines);
+    const charOpposite2 = getChar(opposite2, lines);
+
+    return (charOpposite1 === 'M' && charOpposite2 === 'S') || (charOpposite1 === 'S' && charOpposite2 === 'M');
 }
 
 function partOne(input: string) {
@@ -60,11 +103,11 @@ function partOne(input: string) {
         Array.from(line).forEach((char, indexChar) => {
             if (char === 'X') {
                 for (let neighbour of getNeighbours(indexLine, indexChar, line.length, lines.length)) {
-                    if (lines[neighbour[0]][neighbour[1]] === 'M') {
+                    if (getChar(neighbour, lines) === 'M') {
                         let nextNeighbour = nextXmasChar([indexLine, indexChar], neighbour);
-                        if (isValidChar(nextNeighbour[0], nextNeighbour[1], lines) && lines[nextNeighbour[0]][nextNeighbour[1]] === 'A') {
+                        if (isValidChar(nextNeighbour[0], nextNeighbour[1], lines) && getChar(nextNeighbour, lines) === 'A') {
                             nextNeighbour = nextXmasChar(neighbour, nextNeighbour);
-                            if (isValidChar(nextNeighbour[0], nextNeighbour[1], lines) && lines[nextNeighbour[0]][nextNeighbour[1]] === 'S') {
+                            if (isValidChar(nextNeighbour[0], nextNeighbour[1], lines) && getChar(nextNeighbour, lines) === 'S') {
                                 result++;
                             }
                         }
@@ -77,58 +120,6 @@ function partOne(input: string) {
     return result;
 }
 
-// M M   M
-//  A   MAS
-// S S   S
-
-function isXMAS(char1: number[], char2: number[], lines: string[]) {
-    let nextM = [];
-    let nextS = [];
-    if (char1[0] === char2[0]) {
-        nextM = [char1[0] - 1, char1[1]];
-        nextS = [char1[0] + 1, char1[1]];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-
-        nextM = [char1[0] + 1, char1[1]];
-        nextS = [char1[0] - 1, char1[1]];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-    } else if (char1[1] === char2[1]) {
-        nextM = [char1[0], char1[1] - 1];
-        nextS = [char1[0], char1[1] + 1];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-
-        nextM = [char1[0], char1[1] + 1];
-        nextS = [char1[0], char1[1] - 1];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-    }
-    else if ((char1[0] > char2[0] && char1[1] > char2[1]) || (char1[0] < char2[0] && char1[1] < char2[1])) {
-        nextM = [char1[0] - 1, char1[1] + 1];
-        nextS = [char1[0] + 1, char1[1] - 1];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-
-        nextM = [char1[0] + 1, char1[1] - 1];
-        nextS = [char1[0] - 1, char1[1] + 1];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-    }
-    else if ((char1[0] < char2[0] && char1[1] > char2[1] || (char1[0] > char2[0] && char1[1] < char2[1]))) {
-        nextM = [char1[0] - 1, char1[1] - 1];
-        nextS = [char1[0] + 1, char1[1] + 1];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-
-        nextM = [char1[0] + 1, char1[1] + 1];
-        nextS = [char1[0] - 1, char1[1] - 1];
-        if (isValidXMAS(nextM, nextS, lines) && (char2[0] !== nextS[0] || char2[1] !== nextS[1])) return true;
-    }
-    return false;
-}
-
-function isValidXMAS(nextM: number[], nextS: number[], lines: string[]) {
-    return isValidChar(nextM[0], nextM[1], lines)
-        && isValidChar(nextS[0], nextS[1], lines)
-        && lines[nextM[0]][nextM[1]] === 'M'
-        && lines[nextS[0]][nextS[1]] === 'S'
-}
-
 function partTwo(input: string) {
     let result = 0;
 
@@ -138,9 +129,9 @@ function partTwo(input: string) {
         Array.from(line).forEach((char, indexChar) => {
             if (char === 'M') {
                 for (let neighbour of getNeighbours(indexLine, indexChar, line.length, lines.length)) {
-                    if (lines[neighbour[0]][neighbour[1]] === 'A') {
+                    if (getChar(neighbour, lines) === 'A') {
                         let nextNeighbour = nextXmasChar([indexLine, indexChar], neighbour);
-                        if (isValidChar(nextNeighbour[0], nextNeighbour[1], lines) && lines[nextNeighbour[0]][nextNeighbour[1]] === 'S') {
+                        if (isValidChar(nextNeighbour[0], nextNeighbour[1], lines) && getChar(nextNeighbour, lines) === 'S') {
                             if (isXMAS(neighbour, nextNeighbour, lines)) result++;
                         }
                     }
@@ -149,7 +140,7 @@ function partTwo(input: string) {
         });
     });
 
-    return result/2;
+    return result / 2;
 }
 
 console.log('Part 1:', partOne(input));

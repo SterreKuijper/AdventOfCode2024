@@ -20,7 +20,6 @@ function partOne(input: string) {
         result += Math.abs(list1[i] - list2[i]);
     }
 
-
     return result;
 }
 

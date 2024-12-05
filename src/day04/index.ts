@@ -1,6 +1,6 @@
-import {utils} from "../utils/utils";
+import {readFile} from "../utils/readFile";
 
-const input = utils('../inputs/day04.txt');
+const input = readFile('../inputs/day04.txt');
 
 function isEqualChar(char1: number[], char2: number[]) {
     return char1[0] === char2[0] && char1[1] === char2[1];

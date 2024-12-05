@@ -1,6 +1,6 @@
-import {utils} from "../utils/utils";
+import {readFile} from "../utils/readFile";
 
-const input = utils('../inputs/day03.txt');
+const input = readFile('../inputs/day03.txt');
 
 function mul(a: number, b: number) {
     return a * b;

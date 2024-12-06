@@ -130,9 +130,10 @@ function partTwo(input: string) {
                         } else {
                             if (!findInArray(visited, nextCoord)) {
                                 visited.push(nextCoord);
+                                alreadyVisited = [guardStartCoord, nextCoord];
                             } else {
                                 alreadyVisited.push(nextCoord);
-                                if (alreadyVisited.length > 20) {
+                                if (alreadyVisited.length > 100) {
                                     result++;
                                     break;
                                 }

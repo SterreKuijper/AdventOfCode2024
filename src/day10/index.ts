@@ -43,16 +43,13 @@ function recursion(checkValue: number, position: number[], map: number[][]): str
 
 function partOne(input: string) {
     const topographicMap = input.split('\n').map(row => row.trim().split('').map(cell => parseInt(cell)));
-    // console.table(topographicMap);
     let result = 0;
 
-    // loop over the map
     for (let i = 0; i < topographicMap.length; i++) {
         for (let j = 0; j < topographicMap[i].length; j++) {
             const cellPosition = [j, i];
             let recursionResult = recursion(0, cellPosition, topographicMap);
             if (recursionResult) {
-                console.log('recursionResult:', recursionResult);
                 let ninePositions: number[][] = [];
                 let pairs = recursionResult.trim().split(';');
                 for (let pair of pairs) {
@@ -70,7 +67,23 @@ function partOne(input: string) {
 }
 
 function partTwo(input: string) {
+    const topographicMap = input.split('\n').map(row => row.trim().split('').map(cell => parseInt(cell)));
     let result = 0;
+
+    for (let i = 0; i < topographicMap.length; i++) {
+        for (let j = 0; j < topographicMap[i].length; j++) {
+            const cellPosition = [j, i];
+            let recursionResult = recursion(0, cellPosition, topographicMap);
+            if (recursionResult) {
+                let pairs = recursionResult.trim().split(';');
+                for (let pair of pairs) {
+                    if (pair) {
+                        result++;
+                    }
+                }
+            }
+        }
+    }
     return result;
 }
 

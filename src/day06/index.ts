@@ -147,6 +147,9 @@ function partTwo(input: string) {
     }
     return result;
 }
-
+console.time('part1')
 console.log('Part 1:', partOne(input));
+console.timeEnd('part1')
+console.time('part2')
 console.log('Part 2:', partTwo(input));
+console.timeEnd('part2')

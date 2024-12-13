@@ -2,13 +2,8 @@ import {readFile} from "../utils/readFile";
 
 const input = readFile('../inputs/day11.txt');
 
-function removeLeadingZeroes(num: number) {
-    let numStr = num.toString();
-    while (numStr[0] == '0') {
-        numStr = numStr.slice(1);
-    }
-    if (numStr == '') return '0';
-    return numStr;
+function removeLeadingZeroes(numStr: string): string {
+    return numStr.replace(/^0+/, '') || '0';
 }
 
 function partOne(input: string) {
@@ -21,8 +16,8 @@ function partOne(input: string) {
                 let stoneStr = stone.toString();
                 let firstHalf = stoneStr.slice(0, stoneStr.length / 2);
                 let secondHalf = stoneStr.slice(stoneStr.length / 2);
-                firstHalf = removeLeadingZeroes(Number(firstHalf));
-                secondHalf = removeLeadingZeroes(Number(secondHalf));
+                firstHalf = removeLeadingZeroes(firstHalf);
+                secondHalf = removeLeadingZeroes(secondHalf);
                 stones[index] = Number(firstHalf);
                 stones.splice(index + 1, 0, Number(secondHalf));
                 index++
@@ -34,10 +29,48 @@ function partOne(input: string) {
     return stones.length;
 }
 
-function partTwo(input: string) {
-    let result = 0;
-    return result;
+function partTwo(input: string): number {
+    let stoneFrequency = new Map<number, number>(); // Map to track frequency of each stone
+
+    // Initialize frequency map with input
+    input.split(' ').map(Number).forEach(stone => {
+        stoneFrequency.set(stone, (stoneFrequency.get(stone) || 0) + 1);
+    });
+
+    for (let i = 0; i < 75; i++) {
+        const newFrequency = new Map<number, number>(); // Map for next iteration
+
+        for (const [stone, count] of stoneFrequency.entries()) {
+            if (stone === 0) {
+                // Replace 0 with 1
+                newFrequency.set(1, (newFrequency.get(1) || 0) + count);
+            } else if (stone.toString().length % 2 === 0) {
+                // Split even-length numbers into halves
+                let stoneStr = stone.toString();
+                let firstHalf = Number(removeLeadingZeroes(stoneStr.slice(0, stoneStr.length / 2)));
+                let secondHalf = Number(removeLeadingZeroes(stoneStr.slice(stoneStr.length / 2)));
+                newFrequency.set(firstHalf, (newFrequency.get(firstHalf) || 0) + count);
+                newFrequency.set(secondHalf, (newFrequency.get(secondHalf) || 0) + count);
+            } else {
+                // Multiply odd-length numbers by 2024
+                let newStone = stone * 2024;
+                newFrequency.set(newStone, (newFrequency.get(newStone) || 0) + count);
+            }
+        }
+
+        // Replace old frequency map with the new one
+        stoneFrequency = newFrequency;
+    }
+
+    // Sum all frequencies to get the total count of stones
+    let totalStones = 0;
+    for (const count of stoneFrequency.values()) {
+        totalStones += count;
+    }
+
+    return totalStones;
 }
+
 
 console.log('Part 1:', partOne(input));
 console.log('Part 2:', partTwo(input));

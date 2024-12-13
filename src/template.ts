@@ -2,7 +2,6 @@ import {readFile} from "./utils/readFile";
 
 const input = readFile('../inputs/dayXX.txt');
 
-
 function partOne(input: string) {
     let result = 0;
     return result;
